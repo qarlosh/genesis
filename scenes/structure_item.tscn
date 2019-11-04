@@ -1,0 +1,43 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://scripts/structure_item.gd" type="Script" id=1]
+
+[node name="StructureItem" type="Control"]
+margin_right = 250.0
+margin_bottom = 85.0
+rect_min_size = Vector2( 270, 85 )
+script = ExtResource( 1 )
+
+[node name="selected" type="ColorRect" parent="."]
+visible = false
+margin_right = 270.0
+margin_bottom = 85.0
+color = Color( 0.823529, 0.27451, 0.27451, 0.392157 )
+
+[node name="image" type="TextureRect" parent="."]
+
+[node name="description" type="Label" parent="."]
+margin_left = 74.0
+margin_right = 240.0
+margin_bottom = 64.0
+rect_min_size = Vector2( 196, 0 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+autowrap = true
+
+[node name="points_cost" type="Label" parent="."]
+margin_top = 68.0
+margin_right = 30.0
+margin_bottom = 82.0
+custom_colors/font_color = Color( 0.588235, 0.784314, 1, 1 )
+text = "999"
+autowrap = true
+
+[node name="resources_cost" type="Label" parent="."]
+margin_left = 35.0
+margin_top = 68.0
+margin_right = 65.0
+margin_bottom = 82.0
+custom_colors/font_color = Color( 1, 0.784314, 0.588235, 1 )
+text = "999"
+autowrap = true
+[connection signal="gui_input" from="." to="." method="_on_StructureItem_gui_input"]

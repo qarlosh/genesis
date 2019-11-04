@@ -1,0 +1,9 @@
+[gd_resource type="SpatialMaterial" format=2]
+
+[resource]
+flags_transparent = true
+albedo_color = Color( 0, 0.929412, 0.8, 0.784314 )
+metallic = 0.6
+metallic_specular = 0.8
+roughness = 0.3
+roughness_texture_channel = 2

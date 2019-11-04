@@ -1,0 +1,347 @@
+enum {ERA_CAVEMEN, ERA_TRIBAL, ERA_ANCIENT, ERA_MEDIEVAL, ERA_MODERN, ERA_FUTURE, ERA_WIN_GAME}
+
+var timer_seconds = 1
+
+# initial values
+var points = 50
+var resources = 75
+var population = 3
+
+var GOD_MODE = false	# for testing purpose, overrides other values. Begin in
+						# last era, with 100000 resources, points and population,
+						# and resources don't decrease.
+						# The values of ONLY_CURRENT_ERA_CONSTRUCTIONS,
+						# REPLACE_ONLY_PAST_ERA_CONSTRUCTIONS and POINTS_INCREASE_SPEED
+						# are untouched.
+
+var GOD_MODE_FROM_FIRST_ERA = true		# if god mode is ON, it will start from frist Era
+
+var EXCHANGE_PENALTY = 0.25					# % of resources or points lost
+											# when transfering from one to the other
+
+var ONLY_CURRENT_ERA_CONSTRUCTIONS = true	# show only constructions of current
+											# era in the panel or show also past
+											# era constructions
+
+var REPLACE_ONLY_PAST_ERA_CONSTRUCTIONS = true # can replace only constructions of
+											# past eras, or can replace also
+											# current era constructions
+
+var POINTS_INCREASE_SPEED = 0.20 			# points per second and per population
+
+var RESOURCES_DECREASE_SPEED_EASY = 0.25			# resources per second and per population
+var RESOURCES_DECREASE_SPEED_MEDIUM = 0.5
+var RESOURCES_DECREASE_SPEED_HARD = 0.75
+
+
+var construction_types = {
+	
+	# CAVEMEN ERA
+	"cave": {
+		name = "Cave",
+		era = ERA_CAVEMEN,
+		resources_cost = 20,
+		points_cost = 20,
+		population_required = 0,
+		population = 3,
+		points_increase_speed_boost = 0.0,
+		resources_increase_speed = 0.0,
+		unlocks_era = 0,
+		list_display_order = 10,
+		mesh = preload("res://scene_models/cave.tscn"),
+		mesh_scale = 0.4,
+		mesh_offset = 0.2,
+		image = preload("res://images/cave.png")
+	},
+	"lake": {
+		name = "Lake",
+		era = ERA_CAVEMEN,
+		resources_cost = 20,
+		points_cost = 30,
+		population_required = 0,
+		population = 0,
+		points_increase_speed_boost = 0.0,
+		resources_increase_speed = 2,
+		unlocks_era = 0,
+		list_display_order = 20,
+		mesh = preload("res://scene_models/Lake.tscn"),
+		mesh_scale = 0.1,
+		mesh_offset = 0.1,
+		image = preload("res://icon.png")
+	},
+	"stonehenge": {
+		name = "Stonehenge",
+		era = ERA_CAVEMEN,
+		resources_cost = 55,
+		points_cost = 30,
+		population_required = 9,
+		population = 0,
+		points_increase_speed_boost = 0.1,
+		resources_increase_speed = 0.0,
+		unlocks_era = 0,
+		list_display_order = 30,
+		mesh = preload("res://scene_models/stonehenge.tscn"),
+		mesh_scale = 0.2,
+		mesh_offset = 0,
+		image = preload("res://images/stonehenge.png")
+	},
+	"bonfire": {
+		name = "Bonfire",
+		era = ERA_CAVEMEN,
+		resources_cost = 150,
+		points_cost = 150,
+		population_required = 18,
+		population = 0,
+		points_increase_speed_boost = 0.01,
+		resources_increase_speed = 0,
+		unlocks_era = ERA_TRIBAL,
+		list_display_order = 40,
+		mesh = preload("res://scene_models/Bonfire.tscn"),
+		mesh_scale = 0.5,
+		mesh_offset = 0,
+		image = preload("res://images/bonfire.png")
+	},
+	
+	# TRIBAL ERA
+	"tent": {
+		name = "Tent",
+		era = ERA_TRIBAL,
+		resources_cost = 170,
+		points_cost = 170,
+		population_required = 0,
+		population = 6,
+		points_increase_speed_boost = 0.0,
+		resources_increase_speed = 0.0,
+		unlocks_era = ERA_MEDIEVAL,
+		list_display_order = 110,
+		mesh = preload("res://models/Tent.obj"),
+		mesh_scale = 0.4,
+		mesh_offset = 0,
+		image = preload("res://images/tent.png")
+	},	
+	
+	"tribal_pot": {
+		name = "Tribal Pot",
+		era = ERA_TRIBAL,
+		resources_cost = 170,
+		points_cost = 190,
+		population_required = 0,
+		population = 10,
+		points_increase_speed_boost = 0.0,
+		resources_increase_speed = 7.0,
+		unlocks_era = 0,
+		list_display_order = 120,
+		mesh = preload("res://models/TribalPot.escn"),
+		mesh_scale = 0.2,
+		mesh_offset = 0,
+		image = preload("res://icon.png")
+	},	
+
+	"sabertooth": {
+		name = "Sabertooth Statue",
+		era = ERA_TRIBAL,
+		resources_cost = 190,
+		points_cost = 220,
+		population_required = 0,
+		population = 10,
+		points_increase_speed_boost = 0.2,
+		resources_increase_speed = 0.0,
+		unlocks_era = 0,
+		list_display_order = 130,
+		mesh = preload("res://models/SaberTooth.escn"),
+		mesh_scale = 0.6,
+		mesh_offset = 0,
+		image = preload("res://icon.png")
+	},
+
+	# MEDIEVAL ERA
+	"castle": {
+		name = "Castle",
+		era = ERA_MEDIEVAL,
+		resources_cost = 800,
+		points_cost = 800,
+		population_required = 0,
+		population = 15,
+		points_increase_speed_boost = 0.0,
+		resources_increase_speed = 0.0,
+		unlocks_era = ERA_MODERN,
+		list_display_order = 510,
+		mesh = preload("res://models/Castle.escn"),
+		mesh_scale = 0.2,
+		mesh_offset = 0,
+		image = preload("res://icon.png")
+	},
+	
+	"house": {
+		name = "House",
+		era = ERA_MEDIEVAL,
+		resources_cost = 240,
+		points_cost = 240,
+		population_required = 0,
+		population = 10,
+		points_increase_speed_boost = 0.0,
+		resources_increase_speed = 0.0,
+		unlocks_era = 0,
+		list_display_order = 1020,
+		mesh = preload("res://models/House.escn"),
+		mesh_scale = 0.25,
+		mesh_offset = 0,
+		image = preload("res://icon.png")
+	},
+	
+	"well": {
+		name = "Well",
+		era = ERA_MEDIEVAL,
+		resources_cost = 500,
+		points_cost = 280,
+		population_required = 0,
+		population = 0,
+		points_increase_speed_boost = 0.2,
+		resources_increase_speed = 0.0,
+		unlocks_era = 0,
+		list_display_order = 150,
+		mesh = preload("res://models/Well.escn"),
+		mesh_scale = 0.2,
+		mesh_offset = 0,
+		image = preload("res://icon.png")
+	},
+	
+	"medieval_market": {
+		name = "Market",
+		era = ERA_MEDIEVAL,
+		resources_cost = 290,
+		points_cost = 320,
+		population_required = 0,
+		population = 0,
+		points_increase_speed_boost = 0.0,
+		resources_increase_speed = 10,
+		unlocks_era = 0,
+		list_display_order = 510,
+		mesh = preload("res://models/medievalMarket.escn"),
+		mesh_scale = 0.7,
+		mesh_offset = 0,
+		image = preload("res://icon.png")
+	},
+	
+	# MODERN ERA
+	"apartment": {
+		name = "Apartment",
+		era = ERA_MODERN,
+		resources_cost = 850,
+		points_cost = 850,
+		population_required = 0,
+		population = 30,
+		points_increase_speed_boost = 0.0,
+		resources_increase_speed = 0.0,
+		unlocks_era = 0,
+		list_display_order = 1010,
+		mesh = preload("res://models/Apartment.escn"),
+		mesh_scale = 0.25,
+		mesh_offset = 0,
+		image = preload("res://icon.png")
+	},	
+	
+	"factory": {
+		name = "Factory",
+		era = ERA_MODERN,
+		resources_cost = 1200,
+		points_cost = 1200,
+		population_required = 0,
+		population = 0,
+		points_increase_speed_boost = 0.0,
+		resources_increase_speed = 40,
+		unlocks_era = 0,
+		list_display_order = 1030,
+		mesh = preload("res://models/Factory.escn"),
+		mesh_scale = 0.2,
+		mesh_offset = 0,
+		image = preload("res://icon.png")
+	},
+	
+	"museum": {
+		name = "Museum",
+		era = ERA_MODERN,
+		resources_cost = 1200,
+		points_cost = 1500,
+		population_required = 120,
+		population = 0,
+		points_increase_speed_boost = 0.5,
+		resources_increase_speed = 0.0,
+		unlocks_era = 0,
+		list_display_order = 1050,
+		mesh = preload("res://models/museum.escn"),
+		mesh_scale = 0.14,
+		mesh_offset = 0,
+		image = preload("res://icon.png")
+	},
+	
+	"blimp": {
+		name = "Blimp",
+		era = ERA_MODERN,
+		resources_cost = 2500,
+		points_cost = 2500,
+		population_required = 0,
+		population = 0,
+		points_increase_speed_boost = 0.3,
+		resources_increase_speed = 30,
+		unlocks_era = 0,
+		list_display_order = 1060,
+		mesh = preload("res://models/Blimp.escn"),
+		mesh_scale = 0.22,
+		mesh_offset = 2,
+		image = preload("res://icon.png")
+	},
+
+	"rocket": {
+		name = "Rocket",
+		era = ERA_MODERN,
+		resources_cost = 4000,
+		points_cost = 4000,
+		population_required = 150,
+		population = 0,
+		points_increase_speed_boost = 1.0,
+		resources_increase_speed = 0.0,
+		unlocks_era = ERA_FUTURE,
+		list_display_order = 1080,
+		mesh = preload("res://models/Rocket.escn"),
+		mesh_scale = 0.5,
+		mesh_offset = 0,
+		image = preload("res://icon.png")
+	},
+	
+	# FUTURE ERA
+	"futuristic_home": {
+		name = "Futuristic Home",
+		era = ERA_FUTURE,
+		resources_cost = 6000,
+		points_cost = 5000,
+		population_required = 0,
+		population = 40,
+		points_increase_speed_boost = 0.0,
+		resources_increase_speed = 0.0,
+		unlocks_era = 0,
+		list_display_order = 1210,
+		mesh = preload("res://models/FuturisticHome.obj"),
+		mesh_scale = 0.1,
+		mesh_offset = 0,
+		image = preload("res://icon.png")
+	},
+	
+	"space_cruiser": {
+		name = "Space Cruiser",
+		era = ERA_FUTURE,
+		resources_cost = 8000,
+		points_cost = 8000,
+		population_required = 60,
+		population = 0,
+		points_increase_speed_boost = 0.0,
+		resources_increase_speed = 90,
+		unlocks_era = ERA_WIN_GAME,
+		list_display_order = 1250,
+		mesh = preload("res://models/SpaceCruiser.escn"),
+		mesh_scale = 0.4,
+		mesh_offset = 1.5,
+		image = preload("res://icon.png")
+	}
+
+}
